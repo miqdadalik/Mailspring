@@ -118,6 +118,9 @@ export default class Sheet extends React.Component<SheetProps, SheetState> {
       } else {
         style.flex = 1;
       }
+      if (idx === this.state.columns.length - 1) {
+        style.flex = '2 1 0%';
+      }
       return (
         <InjectedComponentSet
           direction="column"

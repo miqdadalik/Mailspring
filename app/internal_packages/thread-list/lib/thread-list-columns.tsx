@@ -114,7 +114,7 @@ const c3 = new ListTabular.Column({
     const hasAttachments =
       thread.attachmentCount > 0 && messages.find(m => Utils.showIconForAttachments(m.files));
     if (hasAttachments) {
-      attachment = <div className="thread-icon thread-icon-attachment" />;
+      attachment = <div className="thread-icon thread-icon-attachment"><i className="fa fa-thin fa-paperclip fa-flip-horizontal"></i></div>;
     }
 
     return (
@@ -179,7 +179,7 @@ const cNarrow = new ListTabular.Column({
     const hasAttachments =
       thread.attachmentCount > 0 && messages.find(m => Utils.showIconForAttachments(m.files));
     if (hasAttachments) {
-      attachment = <div className="thread-icon thread-icon-attachment" />;
+      attachment = <div className="thread-icon thread-icon-attachment"><i className="fa fa-thin fa-paperclip fa-flip-horizontal"></i></div>;
     }
 
     const hasDraft = messages.find(m => m.draft);

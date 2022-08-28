@@ -28,6 +28,7 @@ class ThreadListIcon extends React.Component<{ thread: ThreadWithMessagesMetadat
     }
 
     if (this.props.thread.unread) {
+      return '';
       return 'thread-icon-unread thread-icon-star-on-hover';
     }
 

@@ -17,6 +17,7 @@ export default class ComposeButton extends React.Component {
         onClick={this._onNewCompose}
       >
         <RetinaImg name="toolbar-compose.png" mode={RetinaImg.Mode.ContentIsMask} />
+        <span>New Message</span>
       </button>
     );
   }
