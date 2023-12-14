@@ -156,9 +156,14 @@ class DatabaseStore extends MailspringStore {
   }
 
   _prettyConsoleLog(qa) {
+    const darkTheme =
+        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+      primaryColor = darkTheme ? 'white' : 'black',
+      purpleColor = darkTheme ? 'pink' : 'purple';
+
     let q = qa.replace(/%/g, '%%');
-    q = `color:black |||%c ${q}`;
-    q = q.replace(/`(\w+)`/g, '||| color:purple |||%c$&||| color:black |||%c');
+    q = `color:${primaryColor} |||%c ${q}`;
+    q = q.replace(/`(\w+)`/g, `||| color:${purpleColor} |||%c$&||| color:${primaryColor} |||%c`);
 
     const colorRules = {
       'color:green': [
@@ -184,7 +189,7 @@ class DatabaseStore extends MailspringStore {
       for (const keyword of colorRules[style]) {
         q = q.replace(
           new RegExp(`\\b${keyword}\\b`, 'g'),
-          `||| ${style} |||%c${keyword}||| color:black |||%c`
+          `||| ${style} |||%c${keyword}||| color:${primaryColor} |||%c`
         );
       }
     }
@@ -209,6 +214,7 @@ class DatabaseStore extends MailspringStore {
   // If a query is made before the database has been opened, the query will be
   // held in a queue and run / resolved when the database is ready.
   _query(query: SQLString, values: SQLValue[] = [], background = false) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise<{ [key: string]: any }[]>(async (resolve, reject) => {
       if (!this._open) {
         this._waiting.push(() => this._query(query, values).then(resolve, reject));
@@ -362,6 +368,7 @@ class DatabaseStore extends MailspringStore {
       });
     }
 
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise<AgentResponse>(async resolve => {
       if (!this._agent) {
         // Something bad has happened and we were immediately unable to spawn the query helper.

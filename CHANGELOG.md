@@ -1,5 +1,137 @@
 # Mailspring Changelog
 
+## 1.13.2
+
+This is a patch release that fixes several issues: 
+
+- Composition events in Mailspring's composer should work as expected. (Typing modifier keys, such as Option-E followed by E to create É)
+
+- The composer warn about several more invalid recipient errors correctly (thanks @Phylu!)
+
+- Dark-mode tray support on Windows has been improved with new icons (thanks @Phylu!) 
+
+- The Linux Snap build no longer requests extraneous permissions (thanks @3v1n0!)
+
+## 1.13.1
+
+Mailspring 1.13 now runs on Electron 22, completing a migration process we started in 1.12.0!
+
+If you are upgrading from an old version of Mailspring, download and run 1.12.0 first before installing this version. We've moved from keytar to Electron's safeStorage API for securely storing your email passwords, and version 1.12.0 will perform a migration ensuring your passwords are transitioned.
+
+If you're using the snap version of Mailspring, you may find that Mailspring forgets your passwords when you upgrade. I'm very sorry for the hassle this causes - issues with snap containment in version 1.12.0 caused Mailspring to lose many user's passwords during the upgrade process. If this applies to you, you may see password errors and need to:
+
+    Visit Preferences > Subscription and click Setup Mailspring ID and sign back in to your Mailspring account. (You should see an alert at launch that will remind you which email address you'd used for your Mailspring ID)
+
+    Visit Preferences > Accounts and re-authenticate any accounts shown in red that are having connection difficulty.
+
+## 1.12.0 (10/09/2023)
+
+Features:
+
+- The Windows tray icon styles have been improved, and a new option allows you to opt-out of the red icon style. (Thanks @Phylu)
+
+- Mail rules now support filtering based on the "Reply-to" header. (Thanks @Phylu)
+
+- The "Snooze" UI now allows you to type "600" as a shortcut for for "6:00". (Thanks @ChocoTonic)
+
+Bug Fixes:
+
+- The snooze label is less ambiguous and includes the month and year. (Thanks @Phylu)
+
+Localization:
+
+- British english localizations have been added. (Thanks @danbishop)
+
+- Traditional chinese localizations have been greatly improved. (Thanks @PeterDaveHello)
+
+Developer:
+
+- Mailspring now stores your mail secrets using Electron SafeStorage instead of the deprecated Keytar library thanks to updates by @Phylu. This will allow us to move to a newer version of Electron soon!
+
+- The Snap package now uses core22 and the `gnome` extension. (Thanks @soumyaDghosh)
+
+## 1.11.0 (07/28/2023)
+
+Features:
+
+- The "Move to Folder" menu action allows you to press Tab or the "→" key to complete the name of the highlighted folder, which makes it easier to complete a path in long folder hierarchies.
+
+- Mailspring now properly identifies and formats quoted text from Yahoo and AOL email. (Thanks @nzayatz14)
+
+- On MacOS, the Mailspring icon in the dock now allows you to compose a new message from the context menu. (thanks @Naroh091)
+
+- Mailspring's menu bar icon is now red for new mail and blue for unread mail, which makes it easier to spot a new message that needs attention. (#2433, thanks @marivaldojr)
+
+Bug Fixes:
+
+- Contact sync no longer crashes when a contact has no display name (thanks @ww-daniel-mora)
+
+- The help menu now offers the standard MacOS "menu search" feature (Thanks @probablykasper)
+
+- Colons are allowed in URLs and no longer break Mailspring's link highlighting. (thanks @choptastic!)
+
+- The email preview is no longer in some cases in vertical layout (thanks @glenn2223!)
+
+- Updated Italian translations (thanks @andy00087!)
+
+Developer:
+
+- Mailspring now uses a more restrictive Content-Security-Policy that includes `object-src none; media-src mailspring:; manifest-src none;`. If your plugin packaged media such as sounds, you may need to reference them via the mailspring:// URL syntax (ala 2b75347c)
+
+## 1.10.8 (12/29/2022)
+
+_Happy new year! Thanks for your continued support - we're celebrating five years of open-source and the 60th Mailspring release!_
+
+Features:
+
+- You can now drag-to-resize inline images in the composer! (Thanks @glenn2223!)
+
+Bug Fixes:
+
+- Launching Mailspring after a long time no longer causes the app to crash trying to show the vacuum UI. (Thankfully these changes do complete, so this error is recoverable.)
+
+- Mailspring no longer shows "0pm" at 12pm / noon in some scenarios. (Thanks @glenn2223!)
+
+- Updated Italian translations (thanks @andy00087!)
+
+## 1.10.7 (11/21/2022)
+
+- When creating a new IMAP + SMTP account, Mailspring sends a test message through the SMTP gateway to yourself, instead of attempting to send the message to an invalid address.
+
+- When clicking "Unsubscribe", Mailspring verifies that the unsubscribe URL in the email will open in your default web browser.
+
+- Composer recipient warnings are now optional. (Thanks @arhanjain!)
+
+- The "and X more" display in message contacts no longer includes a stray `$` (Thanks @timdorr)
+
+## 1.10.6 (10/10/2022)
+
+Features:
+
+- The send later delay can be skipped by clicking the new `Send now instead` button (localization required)
+
+Changes:
+
+- Mailsync now requests fewer emails at a time, fixing compatibility issues with large Office365 accounts. (Thanks @BrandonGillis for extensive testing of this change!)
+
+- Inline image "cid:" references may appear only in `<img src=“”>`, and may not appear elsewhere in message bodies.
+
+- Mailspring uses iframe sandboxing to disallow interactivity in message bodies, in addition to santizing loaded HTML down to a strict list of tags and attributes.
+
+- Fixes a rare ResizeObserver error loop caused by messages resizing as they're unmounted.
+
+- Mailspring's Flatpak version number has been updated.
+
+- The Brazilian Portuguese translation has been reviewed and refined by @matheusreich (#2429)
+
+- Fix the vertical overflow bug (Community - 3507) (Thanks @glenn2223! #2423)
+
+- Fix `[Message Clipped - Show All]` link (Thanks @glenn2223! #2426)
+
+- The message participant list is easier to interact with, thanks to several adjustments by @glenn2223! See https://github.com/Foundry376/Mailspring/pull/2425 for more details.
+
+- The "Recent Emails" content in Mailspring's sidebar now displays the weekday and time (eg: "Mon, 10:15") and shows 5 days of emails rather than 2.
+
 ## 1.10.5 (8/10/2022)
 
 Changes:

@@ -131,6 +131,12 @@ function getChronoPast() {
 }
 
 function expandDateLikeString(dateLikeString: string) {
+  // Short format: 123 => 1:23 or 1234 => 12:34
+  if (/^\d{3,4}$/.test(dateLikeString)) {
+    const len = dateLikeString.length;
+    dateLikeString = dateLikeString.slice(0, len - 2) + ':' + dateLikeString.slice(len - 2); // Insert colon
+  }
+
   // Short format: 2h
   if (/^\d+h$/.test(dateLikeString)) {
     const numHours = dateLikeString.match(/^\d+/)[0]; // Extract number
@@ -309,7 +315,7 @@ const DateUtils = {
           results[val].month(month - 1); // moment zero-indexes month
           results[val].date(day);
 
-          if (!gotTime) {
+          if (!gotTime[val]) {
             results[val].hour(hour);
             results[val].minute(minute);
           }
@@ -389,27 +395,40 @@ const DateUtils = {
    *
    * The returned date/time format depends on how long ago the timestamp is.
    */
-  shortTimeString(datetime) {
+  shortTimeString(datetime: Date) {
     const now = moment();
     const diff = now.diff(datetime, 'days', true);
     const isSameDay = now.isSame(datetime, 'days');
-    let format = null;
+    const opts: Intl.DateTimeFormatOptions = {
+      hourCycle: AppEnv.config.get('core.workspace.use24HourClock') ? 'h23' : 'h12',
+    };
 
     if (diff <= 1 && isSameDay) {
       // Time if less than 1 day old
-      format = DateUtils.getTimeFormat(null);
-    } else if (diff < 2 && !isSameDay) {
-      // Month and day with time if up to 2 days ago
-      format = `MMM D, ${DateUtils.getTimeFormat(null)}`;
-    } else if (diff >= 2 && diff < 365) {
-      // Month and day up to 1 year old
-      format = 'MMM D';
+      opts.hour = 'numeric';
+      opts.minute = '2-digit';
+    } else if (diff < 5 && !isSameDay) {
+      // Weekday with time if up to 2 days ago
+      //opts.month = 'short';
+      //opts.day = 'numeric';
+      opts.weekday = 'short';
+      opts.hour = 'numeric';
+      opts.minute = '2-digit';
     } else {
-      // Month, day and year if over a year old
-      format = 'MMM D YYYY';
+      if (diff < 365) {
+        // Month and day up to 1 year old
+        opts.month = 'short';
+        opts.day = 'numeric';
+      } else {
+        // Month, day and year if over a year old
+        opts.year = 'numeric';
+        opts.month = 'short';
+        opts.day = 'numeric';
+      }
+      return datetime.toLocaleDateString(navigator.language, opts);
     }
 
-    return moment(datetime).format(format);
+    return datetime.toLocaleTimeString(navigator.language, opts);
   },
 
   /**
@@ -418,11 +437,14 @@ const DateUtils = {
    * @param {Date} datetime - Timestamp
    * @return {String} Formated date/time
    */
-  mediumTimeString(datetime) {
-    let format = 'MMMM D, YYYY, ';
-    format += DateUtils.getTimeFormat({ seconds: false, upperCase: true, timeZone: false });
-
-    return moment(datetime).format(format);
+  mediumTimeString(datetime: Date) {
+    return datetime.toLocaleTimeString(navigator.language, {
+      hourCycle: AppEnv.config.get('core.workspace.use24HourClock') ? 'h23' : 'h12',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      second: undefined,
+    });
   },
 
   /**
@@ -431,13 +453,20 @@ const DateUtils = {
    * @param {Date} datetime - Timestamp
    * @return {String} Formated date/time
    */
-  fullTimeString(datetime) {
-    let format = 'dddd, MMMM Do YYYY, ';
-    format += DateUtils.getTimeFormat({ seconds: true, upperCase: true, timeZone: true });
+  fullTimeString(datetime: Date) {
+    // ISSUE: this does drop ordinal. There is this:
+    // -> new Intl.PluralRules(LOCALE, { type: "ordinal" }).select(dateTime.getDay())
+    // which may work with the below regex, though localisation is required
+    // `(?<!\d)${dateTime.getDay()}(?!\d)` replace `$1${localise(ordinal)}`
 
-    return moment(datetime)
-      .tz(tz)
-      .format(format);
+    return datetime.toLocaleTimeString(navigator.language, {
+      hourCycle: AppEnv.config.get('core.workspace.use24HourClock') ? 'h23' : 'h12',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+      second: undefined,
+    });
   },
 };
 

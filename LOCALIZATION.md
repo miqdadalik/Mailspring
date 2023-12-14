@@ -6,13 +6,7 @@ Providing localization in many languages is a challenge, and automatic translati
 
 ## Contributing Localizations
 
-#### Option 1: Suggest Changes
-
-From within Mailspring, choose "Developer > Toggle Localizer Tools" from the menu. A yellow bar appears at the bottom of the window. From here, you can use the small "Inspect" button to click text in the window which is untranslated or poorly translated. Type a new translation and click "Submit"!
-
-_Note: These translations are reviewed manually and a Mailspring maintainer will change the necessary files._
-
-#### Option 2: Submit a Pull Request
+#### Submit a Pull Request
 
 If you have a GitHub account, you can improve the localization files directly and submit a Pull Request! If you're interested in providing many translations, or translating things like network error messages you may not ever see yourself, this is the best bet. It also means you'll be recognized as a Mailspring contributor and the Mailspring project will appear on your GitHub profile!
 
@@ -46,3 +40,19 @@ Or, when developing th app and running it from your working copy:
 ```
 npm start -- --lang=de
 ```
+
+## Understanding the scripts
+
+- **format-localizations.js**
+
+  - **Usage:** `node scripts/format-localizations.js`
+  - **Description:** This script finds all uses of `localized()` in ts, tsx, js, jsx files. And include them in _en.json_. It also removes unused translations from all locales and sorts them alphabetically.
+
+- **improve-localization.js**
+
+  - **Usage:** `node scripts/improve-localization.js`
+  - **Description:** This script compares the translations in _en.json_ and in the chosen locale.
+
+    - **Option 1:** It will prompt you for each missing translation. (if you wish to skip a translation, simply leave blank and press Enter)
+
+    - **Option 2:** It will set null to each missing translation, and it will be up to you to replace them directly in the corresponding json file.

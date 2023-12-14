@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import { localized } from 'mailspring-exports';
 
-const { app, BrowserWindow } = require('@electron/remote');
+const { app, BrowserWindow, dialog } = require('@electron/remote');
 
 export default class PrintWindow {
   browserWin: Electron.BrowserWindow;
@@ -29,7 +29,7 @@ export default class PrintWindow {
       <!DOCTYPE html>
       <html>
         <head>
-          <meta http-equiv="Content-Security-Policy" content="default-src * mailspring:; script-src 'self' chrome-extension://react-developer-tools; style-src * 'unsafe-inline' mailspring:; img-src * data: mailspring: file:;">
+          <meta http-equiv="Content-Security-Policy" content="default-src * mailspring:; script-src 'self' chrome-extension://react-developer-tools; style-src * 'unsafe-inline' mailspring:; img-src * data: mailspring: file:; object-src none; media-src none; manifest-src none;">
           <meta charset="utf-8">
           ${styleTags}
           <link rel="stylesheet" type="text/css" href="${stylesPath}">
@@ -80,7 +80,24 @@ export default class PrintWindow {
         contextIsolation: false,
       },
     });
-    require("@electron/remote").require("@electron/remote/main").enable(this.browserWin.webContents);
+
+    this.browserWin.webContents.ipc.on('print-to-pdf', async () => {
+      const { filePath } = await dialog.showSaveDialog({
+        defaultPath: `${subject}.pdf`,
+      });
+
+      if (!filePath) {
+        return;
+      }
+      const data = await this.browserWin.webContents.printToPDF({
+        margins: { marginType: 'none' },
+        pageSize: 'Letter',
+        printBackground: true,
+        landscape: false,
+      });
+      fs.writeFileSync(filePath, data);
+    });
+
     this.browserWin.removeMenu();
     fs.writeFileSync(tmpMessagesPath, `window.printMessages = ${printMessages}`);
     fs.writeFileSync(this.tmpFile, content);
